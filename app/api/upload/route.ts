@@ -1,46 +1,69 @@
+// app/api/upload/route.ts
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { supabaseAdmin } from '../../../lib/supabaseAdmin';
 
-export const runtime = 'nodejs';
+export const runtime = 'nodejs'; // autorisé (optionnel)
 
 export async function POST(req: Request) {
+  // Vérif du content-type
   const ct = req.headers.get('content-type') || '';
   if (!ct.includes('multipart/form-data')) {
-    return NextResponse.json({ ok:false, error:'Content-Type must be multipart/form-data' }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, error: 'Content-Type must be multipart/form-data' },
+      { status: 400 }
+    );
   }
 
+  // Récupère les champs
   const form = await req.formData();
   const file = form.get('file') as File | null;
   const kind = String(form.get('kind') || 'misc');
   const email = String(form.get('email') || 'anonymous@example.com');
 
-  if (!file) return NextResponse.json({ ok:false, error:'Missing file' }, { status: 400 });
+  if (!file) {
+    return NextResponse.json({ ok: false, error: 'Missing file' }, { status: 400 });
+  }
 
+  // 1) Assure un profil par email
   const { data: prof, error: e1 } = await supabaseAdmin
     .from('profiles')
     .upsert({ email }, { onConflict: 'email' })
     .select('id')
     .single();
-  if (e1) return NextResponse.json({ ok:false, error:e1.message }, { status: 500 });
+  if (e1 || !prof) {
+    return NextResponse.json({ ok: false, error: e1?.message || 'Profile error' }, { status: 500 });
+  }
 
+  // 2) Upload dans Storage
   const buf = Buffer.from(await file.arrayBuffer());
-  const safeName = `${Date.now()}_${file.name}`.replace(/[^a-zA-Z0-9._-]/g,'_');
+  const safeName = `${Date.now()}_${file.name}`.replace(/[^a-zA-Z0-9._-]/g, '_');
   const path = `${prof.id}/${kind}/${safeName}`;
 
   const { error: e2 } = await supabaseAdmin
-    .storage.from('uploads')
-    .upload(path, buf, { contentType: file.type || 'application/octet-stream' });
-  if (e2) return NextResponse.json({ ok:false, error:e2.message }, { status: 500 });
+    .storage
+    .from('uploads')
+    .upload(path, buf, { contentType: file.type || 'application/octet-stream', upsert: false });
+  if (e2) {
+    return NextResponse.json({ ok: false, error: e2.message }, { status: 500 });
+  }
 
+  // 3) Trace en base
   const { error: e3 } = await supabaseAdmin
     .from('uploads')
     .insert({ profile_id: prof.id, kind, url: path });
-  if (e3) console.warn('[uploads insert]', e3.message);
+  if (e3) {
+    // On log mais on ne bloque pas le retour
+    console.warn('[uploads insert]', e3.message);
+  }
 
+  // 4) URL signée 24h (pour affichage immédiat côté client)
   const { data: signed, error: e4 } = await supabaseAdmin
-    .storage.from('uploads')
-    .createSignedUrl(path, 60*60*24);
-  if (e4) return NextResponse.json({ ok:false, error:e4.message }, { status: 500 });
+    .storage
+    .from('uploads')
+    .createSignedUrl(path, 60 * 60 * 24);
+  if (e4) {
+    return NextResponse.json({ ok: true, path, url: null, note: 'Uploaded but no signed URL' });
+  }
 
-  return NextResponse.json({ ok:true, path, url: signed?.signedUrl });
+  return NextResponse.json({ ok: true, path, url: signed?.signedUrl });
 }
