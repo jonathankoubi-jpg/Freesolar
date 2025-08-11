@@ -9,11 +9,19 @@
     "isolatedModules": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "baseUrl": ".",
-    "paths": { "@/*": ["./*"] }
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "lib/app/**"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
