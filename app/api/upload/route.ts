@@ -1,4 +1,3 @@
-// app/api/upload/route.ts — version minimale pour débloquer le build
 export const runtime = 'nodejs';
 
 export async function POST() {
