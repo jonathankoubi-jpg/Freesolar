@@ -10,7 +10,9 @@
     "skipLibCheck": true,
     "noEmit": true,
     "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true
+    "allowJs": true,
+    "baseUrl": ".",
+    "paths": { "@/*": ["./*"] }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules", "lib/app/**"]
