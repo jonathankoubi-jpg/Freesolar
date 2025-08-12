@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Freesolar</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f8f9fa;
+      color: #333;
+    }
+    header {
+      background: #004080;
+      color: white;
+      text-align: center;
+      padding: 1.5rem;
+    }
+    h1 {
+      margin: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 2rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin: 0.5rem 0 0.2rem;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background: #ffcc00;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover {
+      background: #e6b800;
+    }
+    .success {
+      display: none;
+      color: green;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Freesolar</h1>
+  <p>Réduisez vos factures d'électricité jusqu'à 60%</p>
+</header>
+
+<div class="container">
+  <h2>Demandez votre devis gratuit</h2>
+  <form id="contactForm">
+    <label>Prénom</label>
+    <input type="text" name="prenom" required />
+    
+    <label>Nom</label>
+    <input type="text" name="nom" required />
+    
+    <label>Téléphone</label>
+    <input type="tel" name="telephone" required />
+    
+    <label>Email</label>
+    <input type="email" name="email" required />
+    
+    <label>Propriétaire ?</label>
+    <select name="proprietaire" required>
+      <option value="">-- Choisissez --</option>
+      <option>Oui</option>
+      <option>Non</option>
+    </select>
+    
+    <label>Orientation du toit</label>
+    <select name="orientation" required>
+      <option value="">-- Choisissez --</option>
+      <option>Sud</option>
+      <option>Est</option>
+      <option>Ouest</option>
+      <option>Nord</option>
+    </select>
+    
+    <label>
+      <input type="checkbox" name="bonus" /> Je veux bénéficier du bonus 60%
+    </label>
+    
+    <button type="submit">Envoyer</button>
+  </form>
+  <p class="success">✅ Votre demande a été envoyée !</p>
+</div>
+
+<script>
+  document.getElementById("contactForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    document.querySelector(".success").style.display = "block";
+    this.reset();
+  });
+</script>
+
+</body>
+</html>
