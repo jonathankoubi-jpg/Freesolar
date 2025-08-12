@@ -1,9 +1,0 @@
-export const metadata = { title: 'Freesolar', description: 'Portail solaire' };
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="fr">
-      <body style={{ fontFamily:'system-ui', margin:0 }}>{children}</body>
-    </html>
-  );
-}
